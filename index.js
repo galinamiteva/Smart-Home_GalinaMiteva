@@ -22,12 +22,12 @@ app.use('/acs', routeAirconditioners);
 app.use('/blinds', routeBlinds);
 app.use('/cameras', routeCameras);
 app.use('/lights', routeLights);
-/*app.use('/locks', routeLocks);
+app.use('/locks', routeLocks);
 app.use ('/speakers', routeSpeakers);
 app.use ('/vacuums', routeVacuums);
- */
 
-//Hämta en lista av enheter som JSON 
+
+//Hämta en lista av enheter som JSON om det behövs
 app.get ('/all', (req, res)=>{
     let categories = db.get('categories').value();
     let response = {};

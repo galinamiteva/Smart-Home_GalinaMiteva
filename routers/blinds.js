@@ -3,7 +3,7 @@ const router = new Router;
 const { db, update } = require("./../db"); //vi behöver index.js från db, så vi inte skriva filnamnet
 
 
-//Bara att sätta på    till ex http://localhost:3030/blinds/BLI1/down
+//Bara att sätta på    ...  http://localhost:3030/blinds/BLI1/down
 router.get('/:id/:state', async(req, res) => {
   let id = req.params.id;
   let state = req.params.state
