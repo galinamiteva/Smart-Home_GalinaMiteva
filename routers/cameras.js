@@ -3,7 +3,7 @@ const router = new Router;
 const { db, update } = require("./../db"); //vi behöver index.js från db, så vi inte skriva filnamnet
 
 //Här kan man ha 3 scenario -filming(on-true), faking(on-true), off(on-false) på url: http://localhost:3030/cameras/CAM1/filming
-router.get('/:id/:state', async (req,res) => {
+router.get('/:id/:state', (req,res) => {
   let id = req.params.id;
   let state = req.params.state
   let onValue = req.params.on
