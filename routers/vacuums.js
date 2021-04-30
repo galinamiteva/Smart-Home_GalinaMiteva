@@ -19,8 +19,6 @@ router.get('/:id/power/:state', (req,res) => {
       default: console.log('Kan du välja mellan cleaning, charging och off')
   }
   
-
-
   // update db
   db.get( 'devices' ) 
   .find({ id: id }) 
@@ -34,16 +32,6 @@ router.get('/:id/power/:state', (req,res) => {
       msg: `Vacuum med id: ${id} nu ${req.params.state}`
   })
 })
-
-
-
-
-
-
-
-
-
-
 
 
 // EXPORT
