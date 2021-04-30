@@ -3,7 +3,7 @@ const router = new Router();
 const { db, update } = require('./../db'); //vi behöver index.js från db, så vi inte skriva filnamnet
 
 // på http://localhost:3030/vacuums/VAC1/power/cleaning
-router.get('/:id/power/:state', async (req,res) => {
+router.get('/:id/power/:state', (req,res) => {
   let id = req.params.id;
   let state = req.params.state
   let onValue = req.params.on
