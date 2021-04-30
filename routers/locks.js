@@ -4,7 +4,7 @@ const { db, update } = require('./../db'); //vi behöver index.js från db, så 
 
 
 //På  http://localhost:3030/locks/LOC1/code/1234 
-router.get('/:id/code/:code', async (req,res) => {
+router.get('/:id/code/:code', (req,res) => {
   let id = req.params.id;
   let isLocked = (req.params.code === '1234') ? true : false;
 
