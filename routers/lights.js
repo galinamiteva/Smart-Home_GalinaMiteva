@@ -21,6 +21,9 @@ router.get('/:id/power/:state', async (req,res) => {
     })  
 })
 
+
+
+
 // Byta färgen  - till ex http://localhost:3030/lights/LIG3/color/ED6A24
 router.get('/:id/color/:value', async (req,res) => {
   let id = req.params.id;

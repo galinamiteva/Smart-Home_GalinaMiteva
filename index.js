@@ -1,10 +1,45 @@
 const { app } = require('./core'); 
-const { db, update } = require('./db')
+const { db, update, sse } = require('./db')
 const port = 3030;
 
-app.listen(port, () => {
-    console.log(`API for smart home 1.1 up n running on port ${port}.`)
-})
+app.use(require('express').json());
+app.get('/stream', sse.init); // <-- това активира SSE endpoint
+
+
+const { PassThrough } = require('stream');
+
+
+
+const onHeaders = require('on-headers');
+
+const devices = db.get('devices').value();
+
+// Reset all devices to off state
+db.get('devices')
+  .forEach(device => {
+    device.on = false;
+  })
+  .write();
+
+console.log('[Reset] Device states after reset:', db.get('devices').value());
+
+
+  app.get('/init', (req, res) => {
+    let devices = db.get('devices').value();
+    res.send(JSON.stringify({ devices: devices }));
+});
+
+app.get('/debug-lock', (req, res) => {
+  const lock = db.get('devices').find({ id: 'LOC1' }).value();
+  res.send(lock);
+});
+
+
+app.listen(port, async () => {
+  console.log(`API for smart home 1.1 up n running on port ${port}.`);
+  const open = (await import('open')).default;   // ⬅️ динамичен ES import
+  open(`http://localhost:${port}`);
+});
 
 /* CODE YOUR API HERE */
 
@@ -51,3 +86,5 @@ app.get ('*', (req, res)=>{
     res.status(404). sendFile('404.html',{root:__dirname + '/public'})  //från filen 404.html
   })
   
+//const open = require('open');
+

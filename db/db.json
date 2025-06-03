@@ -55,23 +55,24 @@
       "name": "Front door",
       "locked": false,
       "secret": "19d493b3-9a2e-495e-9dc2-44b7836dae9a",
-      "code": "1234"
+      "code": "1234",
+      "on": false
     },
     {
       "id": "CAM1",
       "type": "Camera",
       "name": "Front door",
-      "on" : false,
+      "on": false,
       "secret": "a5e337f5-a391-4fda-894e-d14aba719c9e"
     },
     {
       "id": "SPE1",
       "type": "Speaker",
       "name": "Living room",
-      "on" : false,
-      "stream": { 
-        "file" : "testfile.mp3",
-        "name" : "testfile"
+      "on": false,
+      "stream": {
+        "file": "testfile.mp3",
+        "name": "testfile"
       }
     }
   ],
@@ -81,7 +82,6 @@
     "AC",
     "Blind",
     "Vacuum",
-    "Camera",
     "Speaker"
   ],
   "keys": []
