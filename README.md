@@ -1,4 +1,4 @@
-# Smart Home API Lab 1.1
+# Inlämningsuppgift 1-  Smart Home API Lab 1.1
 
 **ZoCom Smart Home API is a playground to learn API design and code with [express.js](https://expressjs.com). 
 Download or fork this repo and get started!**

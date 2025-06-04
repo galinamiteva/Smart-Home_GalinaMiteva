@@ -3,7 +3,7 @@ const router = new Router;
 const { db, update } = require("./../db"); //vi behöver index.js från db, så vi inte skriva filnamnet
 
 // Bara att tända  http://localhost:3030/lights/LIG3/power/on
-router.get('/:id/power/:state', async (req,res) => {
+router.get('/:id/power/:state', (req,res) => {
   let id = req.params.id;
   let state = (req.params.state === 'on') ? true : false;
 
@@ -78,7 +78,7 @@ router.get('/:id/color/:value', async (req,res) => {
 
 
 // Byta brightness   http://localhost:3030/lights/LIG3/brightness/0.7
-router.get('/:id/brightness/:val', async (req,res) => {
+router.get('/:id/brightness/:val', (req,res) => {
   let id = req.params.id;    
   let val = req.params.val;
 
@@ -114,7 +114,7 @@ router.get('/:id/brightness/:val', async (req,res) => {
 
 //Byta brightness och färgen samtidigt - http://localhost:3030/lights/LIG3/color/ED6A24/brightness/0.7
 
-router.get('/:id/color/:value/brightness/:val', async (req,res) => {
+router.get('/:id/color/:value/brightness/:val', (req,res) => {
   let id = req.params.id;
   let val = req.params.val;  
   let color = `#${req.params.value}`;

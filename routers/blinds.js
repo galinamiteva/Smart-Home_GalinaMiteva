@@ -4,7 +4,7 @@ const { db, update } = require("./../db"); //vi behöver index.js från db, så 
 
 
 //Bara att sätta på    ...  http://localhost:3030/blinds/BLI1/down
-router.get('/:id/:state', async(req, res) => {
+router.get('/:id/:state', (req, res) => {
   let id = req.params.id;
   let state = req.params.state
   let onValue = req.params.on

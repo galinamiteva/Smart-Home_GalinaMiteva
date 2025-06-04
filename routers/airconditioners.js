@@ -5,7 +5,7 @@ const { db, update } = require("./../db"); //vi behöver index.js från db, så 
 
 //Bara att sätta på   : till ex http://localhost:3030/acs/AC1/power/on
 
- router.get('/:id/power/:state', async(req, res) => {
+ router.get('/:id/power/:state', (req, res) => {
   let id = req.params.id;
   let state = (req.params.state === 'on') ? true : false;
 
@@ -30,7 +30,7 @@ const { db, update } = require("./../db"); //vi behöver index.js från db, så 
 
 // Byta temperature   : till ex http://localhost:3030/acs/AC1/temperature/25
 
-router.get('/:id/temperature/:value', async(req, res)=>{
+router.get('/:id/temperature/:value', (req, res)=>{
   let id = req.params.id;
   const temperature = Number(req.params.value); //temperature måste bli number!
 
