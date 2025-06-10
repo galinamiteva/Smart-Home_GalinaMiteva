@@ -3,7 +3,6 @@ const { db, update, registerClient } = require('./db');
 const path = require('path');
 const express = require('express');
 
-
 app.use(express.json());
 
 // Reset all devices to off state
@@ -99,5 +98,7 @@ app.use((req, res) => {
   res.status(404).sendFile('404.html', { root: __dirname + '/public' });
 });
 
-
-module.exports = app;
+// 👇 Единствената разлика:
+module.exports = (req, res) => {
+  return app(req, res);
+};
