@@ -3,6 +3,9 @@ const { db, update, registerClient } = require('./db');
 const path = require('path');
 const express = require('express');
 
+const port = process.env.PORT || 3000;
+
+
 app.use(express.json());
 
 // Reset all devices to off state
@@ -36,8 +39,15 @@ app.use('/vacuums', routeVacuums);
 
 
 app.get('/init', (req, res) => {
-  const devices = db.get('devices').value();
-  res.json({ devices });
+  console.log('🔍 /init called');
+  try {
+    const devices = db.get('devices').value();
+    console.log('Devices:', devices);
+    res.json({ devices });
+  } catch (e) {
+    console.error('❌ /init error', e);
+    res.status(500).send({ error: 'Internal error' });
+  }
 });
 
 app.get('/debug-lock', (req, res) => {
@@ -89,6 +99,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+
+app.use((req, res, next) => {
+  console.log(`→ ${req.method} ${req.url}`);
+  next();
+});
+
+// постави го **преди всички `app.get(...)` и `app.use(...)`**
+
 // 404 за всичко останало
 app.use((req, res) => {
   res.status(404).sendFile('404.html', { root: __dirname + '/public' });
@@ -105,9 +123,13 @@ app.use((req, res) => {
   });
 }
  */
-if (require.main === module) {
+/* if (require.main === module) {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
   });
-}
+} */
+
+  app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
