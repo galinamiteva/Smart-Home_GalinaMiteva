@@ -14,7 +14,7 @@ router.post('/:id/unlock', (req, res) => {
 
   db.get('devices')
     .find({ id })
-    .assign({ locked: false, on: true })  // <- on: true за unlocked
+    .assign({ locked: false, on: true, _updated: Date.now() })   // <- on: true за unlocked
     .value();
 
   update();

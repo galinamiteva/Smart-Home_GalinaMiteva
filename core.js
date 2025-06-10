@@ -13,9 +13,10 @@ app.get('/init', (req, res) => {
     res.send(JSON.stringify({ devices: devices }));
 })
 
-app.get('/stream', sse.init);
 
 const compression = require('compression');
+app.use(compression());
+
 
 app.use((req, res, next) => {
   if (req.url.includes('/stream')) {

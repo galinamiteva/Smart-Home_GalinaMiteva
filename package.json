@@ -21,7 +21,6 @@
     "compression": "^1.8.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "express-sse": "^0.5.3",
     "lowdb": "^1.0.0",
     "on-headers": "^1.0.2"
   },

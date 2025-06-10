@@ -1,28 +1,23 @@
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const fs = require('fs');
-let SSE = require('express-sse');
-let sse = new SSE();
-const adapter = new FileSync('./db/db.json')
-const db = low(adapter)
+let clients = [];
 
-/* function update() {
-  return new Promise((resolve, reject) => {
-    const devices = db.get('devices').value();
+const adapter = new FileSync('./db/db.json'); 
+const db = low(adapter);                     
 
-    const payload = { devices };
+function registerClient(res, remove = false) {
+  if (remove) {
+    clients = clients.filter((client) => client !== res);
+  } else {
+    clients.push(res);
+  }
+}
 
-    console.log('[update()] Sending update with devices:', devices);
-    console.log('Sending SSE update:', JSON.stringify(payload, null, 2));
-
-    sse.send(payload);
-    resolve();
-  });
-} */
+// ✅ Новата `update()` функция без express-sse
 function update() {
   return new Promise((resolve, reject) => {
     const devices = db.get('devices').value();
-
     const payload = {
       devices,
       event: 'lockChanged',
@@ -30,9 +25,14 @@ function update() {
     };
 
     console.log('[update()] Sending update with devices:', devices);
-    sse.send(payload);
+
+    // Изпраща на всички активни клиенти
+    clients.forEach((res) => {
+      res.write(`data: ${JSON.stringify(payload)}\n\n`);
+    });
+
     resolve();
   });
 }
-module.exports = { db, sse, update }
 
+module.exports = { db, update, registerClient };

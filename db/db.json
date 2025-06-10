@@ -53,7 +53,7 @@
       "id": "LOC1",
       "type": "Lock",
       "name": "Front door",
-      "locked": false,
+      "locked": true,
       "secret": "19d493b3-9a2e-495e-9dc2-44b7836dae9a",
       "code": "1234",
       "on": false

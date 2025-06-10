@@ -4,74 +4,88 @@
 </audio>
 
 <script>
-  const sse = new EventSource("http://localhost:3030/stream");
+  window.addEventListener("load", () => {
+    fetch("/init")
+      .then(res => res.json())
+      .then(data => {
+        const devices = data.devices;
 
-  sse.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-
-      if (data.event === "lockChanged" && Array.isArray(data.devices)) {
-        const loc1 = data.devices.find(dev => dev.id === "LOC1");
-
-        if (loc1) {
+        const waitForElements = setInterval(() => {
           const lockSection = document.querySelector("section.lock");
-          if (!lockSection) return;
+          const speakerSection = document.querySelector("section.speaker");
 
-          if (loc1.locked === false) {
-            lockSection.classList.add("unlocked");
-          } else {
-            lockSection.classList.remove("unlocked");
-          }
-        }
-      }
-    } catch (e) {
-      console.error("SSE error:", e);
-    }
-  };
+          if (lockSection && speakerSection) {
+            clearInterval(waitForElements);
 
-  const interval = setInterval(() => {
-    const lockSection = document.querySelector("section.lock");
+            const lock = devices.find(d => d.id === "LOC1");
+            const speaker = devices.find(d => d.id === "SPE1");
 
-    if (lockSection) {
-      clearInterval(interval);
+            // Само за lock - ако е отключено - добавяме клас unlocked
+            if (lock?.locked === false) {
+              lockSection.classList.add("unlocked");
+            } else {
+              lockSection.classList.remove("unlocked");
+            }
 
-      lockSection.addEventListener("click", async () => {
-        const isUnlocked = lockSection.classList.contains("unlocked");
-        const id = "LOC1";
+            // Само веднъж включваме speakers, ако са on
+            if (speaker?.on === true) {
+              speakerSection.classList.add("on");
+            } else {
+              speakerSection.classList.remove("on");
+            }
 
-        if (isUnlocked) {
-          // Заключване
-          try {
-            const res = await fetch(`/locks/${id}/lock`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" }
+            // Отделна логика за клик върху lock
+            lockSection.addEventListener("click", async () => {
+              const isUnlocked = lockSection.classList.contains("unlocked");
+              const id = "LOC1";
+
+              if (isUnlocked) {
+                // Ако е отключено, заключваме
+                try {
+                  const res = await fetch(`/locks/${id}/lock`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                  });
+                  const result = await res.json();
+                  alert(result.msg);
+                  // Ако заключим успешно, премахваме unlocked класа
+                  if (!result.error) {
+                    lockSection.classList.remove("unlocked");
+                  }
+                } catch (err) {
+                  alert("Грешка при заключване.");
+                  console.error(err);
+                }
+              } else {
+                // Ако е заключено, отключваме с код
+                const code = prompt("Enter code:");
+                if (!code) return; // Ако няма код, излизаме
+
+                try {
+                  const res = await fetch(`/locks/${id}/unlock`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ code })
+                  });
+                  const result = await res.json();
+                  alert(result.msg);
+                  // Ако отключим успешно, добавяме unlocked класа
+                  if (!result.error) {
+                    lockSection.classList.add("unlocked");
+                  }
+                } catch (err) {
+                  alert("Грешка при отключване.");
+                  console.error(err);
+                }
+              }
             });
-            const result = await res.json();
-            alert(result.msg);
-          } catch (err) {
-            alert("Fel.");
-            console.error(err);
           }
-        } else {
-          // Отключване
-          const code = prompt("Enter code:");
-          try {
-            const res = await fetch(`/locks/${id}/unlock`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ code })
-            });
-            const result = await res.json();
-            alert(result.msg);
-          } catch (err) {
-            alert("Fel.");
-            console.error(err);
-          }
-        }
-      });
-    }
-  }, 500);
+        }, 100);
+      })
+      .catch(err => console.error("Init load error:", err));
+  });
 </script>
+
 
 
 </body></html>

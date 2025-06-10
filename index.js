@@ -1,9 +1,9 @@
 const { app } = require('./core'); 
-const { db, update, sse } = require('./db')
+const { db, update, registerClient } = require('./db');
+
 const port = 3030;
 
 app.use(require('express').json());
-app.get('/stream', sse.init); // <-- това активира SSE endpoint
 
 
 const { PassThrough } = require('stream');
@@ -18,6 +18,10 @@ const devices = db.get('devices').value();
 db.get('devices')
   .forEach(device => {
     device.on = false;
+
+    if (device.type === 'Lock') {
+      device.locked = true;  
+    }
   })
   .write();
 
@@ -32,6 +36,38 @@ console.log('[Reset] Device states after reset:', db.get('devices').value());
 app.get('/debug-lock', (req, res) => {
   const lock = db.get('devices').find({ id: 'LOC1' }).value();
   res.send(lock);
+});
+
+app.get('/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  res.write('retry: 10000\n\n'); // Автоматично повторение след 10 сек, ако връзката падне
+
+  registerClient(res);
+
+  req.on('close', () => {
+    console.log('[SSE] Client disconnected');
+    registerClient(res, true); // remove
+  });
+});
+
+
+app.get('/stream', (req, res) => {
+  // просто ползвай същата логика
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  res.write('retry: 10000\n\n');
+
+  registerClient(res);
+
+  req.on('close', () => {
+    console.log('[SSE] Client disconnected (/stream)');
+    registerClient(res, true);
+  });
 });
 
 
@@ -87,4 +123,5 @@ app.get ('*', (req, res)=>{
   })
   
 //const open = require('open');
+
 
