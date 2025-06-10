@@ -99,6 +99,14 @@ app.use((req, res) => {
 });
 
 // 👇 Единствената разлика:
-module.exports = (req, res) => {
+/* module.exports = (req, res) => {
   return app(req, res);
-};
+}; */
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+}
+

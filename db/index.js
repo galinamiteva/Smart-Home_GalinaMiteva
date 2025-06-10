@@ -1,10 +1,26 @@
-const low = require('lowdb')
-const FileSync = require('lowdb/adapters/FileSync')
+const low = require('lowdb');
 const fs = require('fs');
 let clients = [];
 
-const adapter = new FileSync('./db/db.json'); 
-const db = low(adapter);                     
+let adapter;
+if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+  // 🟡 Във Vercel: използвай памет (без файлове)
+  const Memory = require('lowdb/adapters/Memory');
+  adapter = new Memory();
+  console.log('[DB] Using Memory adapter (Vercel)');
+} else {
+  // ✅ Локално: използвай файл
+  const FileSync = require('lowdb/adapters/FileSync');
+  adapter = new FileSync('./db/db.json');
+  console.log('[DB] Using FileSync adapter (Local)');
+}
+
+const db = low(adapter);
+
+// Ако е в памет, създай начални данни
+if (!db.has('devices').value()) {
+  db.defaults({ devices: [], categories: [] }).write();
+}
 
 function registerClient(res, remove = false) {
   if (remove) {
@@ -14,7 +30,6 @@ function registerClient(res, remove = false) {
   }
 }
 
-// ✅ Новата `update()` функция без express-sse
 function update() {
   return new Promise((resolve, reject) => {
     const devices = db.get('devices').value();
@@ -26,7 +41,6 @@ function update() {
 
     console.log('[update()] Sending update with devices:', devices);
 
-    // Изпраща на всички активни клиенти
     clients.forEach((res) => {
       res.write(`data: ${JSON.stringify(payload)}\n\n`);
     });
