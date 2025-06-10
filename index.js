@@ -1,9 +1,13 @@
 const { app } = require('./core'); 
 const { db, update, registerClient } = require('./db');
+const path = require('path');
+const express = require('express');
 
 const port = 3030;
 
-app.use(require('express').json());
+//app.use(require('express').json());
+app.use(express.json());
+
 
 
 const { PassThrough } = require('stream');
@@ -26,6 +30,23 @@ db.get('devices')
   .write();
 
 console.log('[Reset] Device states after reset:', db.get('devices').value());
+
+//Routers
+const routeAirconditioners = require('./routers/airconditioners');
+const routeBlinds = require ('./routers/blinds');
+const routeCameras = require ('./routers/cameras');
+const routeLights = require ('./routers/lights');
+const routeLocks = require ('./routers/locks')
+const routeSpeakers = require ('./routers/speakers');
+const routeVacuums = require ('./routers/vacuums')
+
+app.use('/acs', routeAirconditioners);
+app.use('/blinds', routeBlinds);
+app.use('/cameras', routeCameras);
+app.use('/lights', routeLights);
+app.use('/locks', routeLocks);
+app.use ('/speakers', routeSpeakers);
+app.use ('/vacuums', routeVacuums);
 
 
   app.get('/init', (req, res) => {
@@ -71,31 +92,13 @@ app.get('/stream', (req, res) => {
 });
 
 
-app.listen(port, async () => {
-  console.log(`API for smart home 1.1 up n running on port ${port}.`);
-  const open = (await import('open')).default;   // ⬅️ динамичен ES import
-  open(`http://localhost:${port}`);
-});
-
-/* CODE YOUR API HERE */
 
 
-//Routers
-const routeAirconditioners = require('./routers/airconditioners');
-const routeBlinds = require ('./routers/blinds');
-const routeCameras = require ('./routers/cameras');
-const routeLights = require ('./routers/lights');
-const routeLocks = require ('./routers/locks')
-const routeSpeakers = require ('./routers/speakers');
-const routeVacuums = require ('./routers/vacuums')
 
-app.use('/acs', routeAirconditioners);
-app.use('/blinds', routeBlinds);
-app.use('/cameras', routeCameras);
-app.use('/lights', routeLights);
-app.use('/locks', routeLocks);
-app.use ('/speakers', routeSpeakers);
-app.use ('/vacuums', routeVacuums);
+
+
+
+
 
 
 //Hämta en lista av enheter som JSON om det behövs
@@ -117,11 +120,22 @@ app.get ('/all', (req, res)=>{
     
 })
 
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 //404 meddelande 
 app.get ('*', (req, res)=>{
     res.status(404). sendFile('404.html',{root:__dirname + '/public'})  //från filen 404.html
   })
   
-//const open = require('open');
-
+app.listen(port, async () => {
+  console.log(`API for smart home 1.1 up n running on port ${port}.`);
+  const open = (await import('open')).default;   // ⬅️ динамичен ES import
+  open(`http://localhost:${port}`);
+});
 
