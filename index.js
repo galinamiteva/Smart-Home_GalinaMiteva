@@ -3,7 +3,6 @@ const { db, update, registerClient } = require('./db');
 const path = require('path');
 const express = require('express');
 
-const port = 3030;
 
 app.use(express.json());
 
@@ -100,8 +99,5 @@ app.use((req, res) => {
   res.status(404).sendFile('404.html', { root: __dirname + '/public' });
 });
 
-app.listen(port, async () => {
-  console.log(`API for smart home 1.1 up n running on port ${port}.`);
-  const open = (await import('open')).default;
-  open(`http://localhost:${port}`);
-});
+
+module.exports = app;
