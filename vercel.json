@@ -11,9 +11,8 @@
     }
   ],
   "routes": [
-    { "src": "/init", "dest": "/api/init" },
-    { "src": "/stream", "dest": "/api/stream" },
-    { "src": "/api/(.*)", "dest": "/index.js" },
-    { "src": "/(.*)", "dest": "/public/$1" }
-  ]
+  { "src": "/(init|stream|events|all|acs|blinds|cameras|lights|locks|speakers|vacuums)", "dest": "/index.js" },
+  { "src": "/(.*)", "dest": "/public/$1" }
+]
+
 }

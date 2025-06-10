@@ -26,30 +26,26 @@ const routeLocks = require('./routers/locks');
 const routeSpeakers = require('./routers/speakers');
 const routeVacuums = require('./routers/vacuums');
 
+app.use('/acs', routeAirconditioners);
+app.use('/blinds', routeBlinds);
+app.use('/cameras', routeCameras);
+app.use('/lights', routeLights);
 app.use('/locks', routeLocks);
 app.use('/speakers', routeSpeakers);
+app.use('/vacuums', routeVacuums);
 
-// 👉 Добавяме API префикс
-app.use('/api/acs', routeAirconditioners);
-app.use('/api/blinds', routeBlinds);
-app.use('/api/cameras', routeCameras);
-app.use('/api/lights', routeLights);
-app.use('/api/locks', routeLocks);
-app.use('/api/speakers', routeSpeakers);
-app.use('/api/vacuums', routeVacuums);
 
-// 👇 API endpoints с префикс
-app.get('/api/init', (req, res) => {
+app.get('/init', (req, res) => {
   const devices = db.get('devices').value();
   res.json({ devices });
 });
 
-app.get('/api/debug-lock', (req, res) => {
+app.get('/debug-lock', (req, res) => {
   const lock = db.get('devices').find({ id: 'LOC1' }).value();
   res.send(lock);
 });
 
-app.get('/api/events', (req, res) => {
+app.get('/events', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -61,7 +57,7 @@ app.get('/api/events', (req, res) => {
   });
 });
 
-app.get('/api/stream', (req, res) => {
+app.get('/stream', (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -73,7 +69,7 @@ app.get('/api/stream', (req, res) => {
   });
 });
 
-app.get('/api/all', (req, res) => {
+app.get('/all', (req, res) => {
   const categories = db.get('categories').value();
   const response = {};
 
@@ -98,11 +94,10 @@ app.use((req, res) => {
   res.status(404).sendFile('404.html', { root: __dirname + '/public' });
 });
 
-// 👇 Единствената разлика:
-module.exports = (req, res) => {
+/* module.exports = (req, res) => {
   return app(req, res);
 };
-
+ */
 /* if (require.main === module) {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
@@ -110,3 +105,9 @@ module.exports = (req, res) => {
   });
 }
  */
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+}
